@@ -1,6 +1,6 @@
 #!/bin/bash
 
-GIT_COMMIT=""
+GIT_COMMIT="$1"
 
 #unused but must exist
 DESKTOP_ENTRY='[Desktop Entry]
@@ -39,12 +39,12 @@ git clean -qfdx
 git reset --hard
 git checkout master
 git pull
+if [ ! -z $GIT_COMMIT ];then
+	git checkout $GIT_COMMIT
+fi
 if [ $? -ne 0 ];then
 	echo "error updating from git"
 	exit 2
-fi
-if [ ! -z $GIT_COMMIT ];then
-	git checkout $GIT_COMMIT
 fi
 VERSION=$(sed -n 's/.*VERSION_NUMBER.*"\(.*\)".*/\1/p' version.h)
 REVISION=$(git log -n 1|head -1|awk '{print $2}'|cut -c1-6)

@@ -46,6 +46,7 @@ fi
 if [ ! -z $GIT_COMMIT ];then
 	git checkout $GIT_COMMIT
 fi
+VERSION=$(sed -n 's/.*VERSION_NUMBER.*"\(.*\)".*/\1/p' version.h)
 REVISION=$(git log -n 1|head -1|awk '{print $2}'|cut -c1-6)
 
 chmod +x ./build-linux.sh && \
@@ -61,4 +62,4 @@ strip -s "$DIR/AppDir/usr/lib/"* || exit 5
 strip -s "$DIR/AppDir/usr/bin/"* || exit 5
 
 cd "$DIR" || exit 5
-./appimagetool AppDir ezquake-$REVISION.AppImage
+./appimagetool AppDir ezquake-$VERSION-$REVISION.AppImage

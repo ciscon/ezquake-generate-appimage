@@ -29,16 +29,20 @@ mkdir -p "$DIR/AppDir/usr/bin" || exit 1
 mkdir -p "$DIR/AppDir/usr/lib" || exit 1
 
 #ezquake git
+fresh=0
 cd build && \
 if [ ! -d ezquake-source ];then
 	git clone https://github.com/ezQuake/ezquake-source.git
+  fresh=1
 fi
 cd ezquake-source || exit 2
-make clean
-git clean -qfdx
-git reset --hard
-git checkout master
-git pull
+if [ $fresh -ne 1 ];then
+  make clean
+  git clean -qfdx
+  git reset --hard
+  git checkout master
+  git pull
+fi
 if [ ! -z $GIT_COMMIT ];then
 	git checkout $GIT_COMMIT
 fi

@@ -1,6 +1,11 @@
 #!/bin/bash
 
-GIT_COMMIT="$1"
+SKIP_DEPS=0
+if [ "$1" = "1" ];then
+  SKIP_DEPS=1
+else
+  GIT_COMMIT="$1"
+fi
 
 #unused but must exist
 DESKTOP_ENTRY='[Desktop Entry]
@@ -53,8 +58,13 @@ fi
 VERSION=$(sed -n 's/.*VERSION_NUMBER.*"\(.*\)".*/\1/p' version.h)
 REVISION=$(git log -n 1|head -1|awk '{print $2}'|cut -c1-6)
 
-chmod +x ./build-linux.sh && \
-nice ./build-linux.sh || exit 3
+if [ $SKIP_DEPS -eq 0 ];then
+  chmod +x ./build-linux.sh && \
+  nice ./build-linux.sh || exit 3
+else
+  make -j$(nproc)
+fi
+
 cp -f ezquake-linux-x86_64 "$DIR/AppDir/usr/bin/." || exit 4
 rm -f "$DIR/AppDir/AppRun"
 echo "$QUAKE_SCRIPT" > "$DIR/AppDir/AppRun" || exit 4

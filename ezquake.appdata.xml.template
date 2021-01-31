@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>com.ezquake</id>
+  <launchable type="desktop-id">com.ezquake.desktop</launchable>
+  <provides>
+    <binary>ezquake</binary>
+  </provides>
+  <name>ezQuake</name>
+  <metadata_license>FSFAP</metadata_license>
+  <project_license/>
+  <summary>ezQuake Quake Client</summary>
+  <content_rating type="oars-1.0">
+    <content_attribute id="social-chat">intense</content_attribute>
+  </content_rating>
+  <screenshots>
+    <screenshot type="default">
+      <caption>ezQuake gameplay</caption>
+      <image>http://www.ezquake.com/screenshots/torches_fog_nailsparks.jpg</image>
+    </screenshot>
+  </screenshots>
+  <url type="homepage">https://www.ezquake.com</url>
+  <releases>
+    <release version="EZQUAKE_VERSION" date="EZQUAKE_DATE">
+    </release>
+  </releases>
+  <description>
+    <p>id Software created Quake in 1996, and released the source code to the engine (under the GPL licence) in 1999. Tonik developed the ZQuake QuakeWorld client from this, before fuh took ZQuake and turned it into FuhQuake.
+
+      The ezQuake project started in August 2004 as a derivative of FuhQuake, and today is the dominant QuakeWorld client for those playing online competitively.</p>
+  </description>
+</component>

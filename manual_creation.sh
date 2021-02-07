@@ -19,7 +19,7 @@ cd "$OWD"
 ${APPDIR}/usr/bin/ezquake-linux-x86_64 $*'
 
 unset CC
-export CFLAGS="-pipe -flto=$(nproc) -fwhole-program"
+export CFLAGS="-march=nehalem -pipe -flto=$(nproc) -fwhole-program"
 export LDFLAGS="$CFLAGS"
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"

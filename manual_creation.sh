@@ -71,7 +71,7 @@ echo "$DESKTOP_ENTRY" > "$DIR/AppDir/ezquake.desktop" || exit 4
 cp "$DIR/quake.png" "$DIR/AppDir/."||true #copy over quake png if it exists
 mkdir -p "$DIR/AppDir/usr/share/metainfo"
 sed 's,EZQUAKE_VERSION,'$VERSION-$REVISION',g;s,EZQUAKE_DATE,'$(date +%F)',g' "$DIR/ezquake.appdata.xml.template" > "$DIR/AppDir/usr/share/metainfo/ezquake.appdata.xml"
-ldd "$DIR/AppDir/usr/bin/ezquake-linux-x86_64" |grep --color=never -v libpthread|grep --color=never -v libz|grep --color=never -v libGL|grep --color=never -v libc.so|grep --color=never -v librt.so|awk '{print $3}'|xargs -I% cp "%" "$DIR/AppDir/usr/lib/." || exit 5
+ldd "$DIR/AppDir/usr/bin/ezquake-linux-x86_64" |grep --color=never -v libGL|grep --color=never -v libc.so|awk '{print $3}'|xargs -I% cp "%" "$DIR/AppDir/usr/lib/." || exit 5
 strip -s "$DIR/AppDir/usr/lib/"* || exit 5
 strip -s "$DIR/AppDir/usr/bin/"* || exit 5
 

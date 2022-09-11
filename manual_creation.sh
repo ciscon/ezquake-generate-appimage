@@ -5,10 +5,21 @@ set -e
 SKIP_DEPS="${SKIP_DEPS:-0}"
 GIT_COMMIT="$1"
 
+ARCH=$(uname -m)
+ARCHDASH=$(echo "$ARCH"|tr '_' '-')
+APPIMAGETOOL="https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-${ARCH}.AppImage"
+
+curl -Ls "$APPIMAGETOOL" > appimagetool
+if [ $? -ne 0 ];then
+	echo "failed to retrieve appimagetool.  bailing out."
+	exit 1
+fi
+chmod -f +x appimagetool
+
 #unused but must exist
 DESKTOP_ENTRY='[Desktop Entry]
 Name=ezquake
-Exec=ezquake-linux-x86_64
+Exec=ezquake-linux-'$ARCH'
 Icon=quake
 Type=Application
 Categories=Game;'
@@ -16,7 +27,7 @@ Categories=Game;'
 QUAKE_SCRIPT='#!/usr/bin/env bash
 export LD_LIBRARY_PATH="${APPIMAGE_LIBRARY_PATH}:${APPDIR}/usr/lib:${LD_LIBRARY_PATH}"
 cd "$OWD"
-exec "${APPDIR}/usr/lib/ld-linux-x86-64.so.2" "${APPDIR}/usr/bin/ezquake-linux-x86_64" $*'
+exec "${APPDIR}/usr/lib/ld-linux-'$ARCHDASH'.so.2" "${APPDIR}/usr/bin/ezquake-linux-'$ARCH'" $*'
 
 unset CC
 export CFLAGS="-march=nehalem -O2 -pipe -flto=$(nproc) -fwhole-program"
@@ -63,7 +74,7 @@ else
   make -j$(nproc)
 fi
 
-cp -f ezquake-linux-x86_64 "$DIR/AppDir/usr/bin/." || exit 4
+cp -f ezquake-linux-$ARCH "$DIR/AppDir/usr/bin/." || exit 4
 rm -f "$DIR/AppDir/AppRun"
 echo "$QUAKE_SCRIPT" > "$DIR/AppDir/AppRun" || exit 4
 chmod +x "$DIR/AppDir/AppRun" || exit 4
@@ -71,10 +82,10 @@ echo "$DESKTOP_ENTRY" > "$DIR/AppDir/ezquake.desktop" || exit 4
 cp "$DIR/quake.png" "$DIR/AppDir/."||true #copy over quake png if it exists
 mkdir -p "$DIR/AppDir/usr/share/metainfo"
 sed 's,EZQUAKE_VERSION,'$VERSION-$REVISION',g;s,EZQUAKE_DATE,'$(date +%F)',g' "$DIR/ezquake.appdata.xml.template" > "$DIR/AppDir/usr/share/metainfo/ezquake.appdata.xml"
-ldd "$DIR/AppDir/usr/bin/ezquake-linux-x86_64" |grep --color=never -v libGL|awk '{print $3}'|xargs -I% cp -Lf "%" "$DIR/AppDir/usr/lib/." || exit 5
+ldd "$DIR/AppDir/usr/bin/ezquake-linux-$ARCH" |grep --color=never -v libGL|awk '{print $3}'|xargs -I% cp -Lf "%" "$DIR/AppDir/usr/lib/." || exit 5
 strip -s "$DIR/AppDir/usr/lib/"* || exit 5
 strip -s "$DIR/AppDir/usr/bin/"* || exit 5
-cp -Lf /lib64/ld-linux-x86-64.so.2 "$DIR/AppDir/usr/lib/." || exit 6
+cp -Lf /lib64/ld-linux-${ARCHDASH}.so.2 "$DIR/AppDir/usr/lib/." || exit 6
 
 cd "$DIR" || exit 5
-ARCH=x86_64 ./appimagetool AppDir ezquake-$VERSION-$REVISION.AppImage
+./appimagetool AppDir ezquake-$VERSION-$REVISION.AppImage

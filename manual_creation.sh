@@ -30,7 +30,7 @@ cd "$OWD"
 exec "${APPDIR}/usr/lib/ld-linux-'$ARCHDASH'.so.2" "${APPDIR}/usr/bin/ezquake-linux-'$ARCH'" $*'
 
 unset CC
-export CFLAGS="-march=nehalem -O2 -pipe -flto=$(nproc) -fwhole-program"
+export CFLAGS="-ffast-math -march=nehalem -O3 -pipe -flto=$(nproc)"
 export LDFLAGS="$CFLAGS"
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"

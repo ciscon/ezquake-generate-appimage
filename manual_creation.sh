@@ -64,7 +64,7 @@ if [ $? -ne 0 ];then
 	echo "error updating from git"
 	exit 2
 fi
-VERSION=$(sed -n 's/.*VERSION_NUMBER.*"\(.*\)".*/\1/p' version.h)
+VERSION=$(sed -n 's/.*VERSION_NUMBER.*"\(.*\)".*/\1/p' src/version.h)
 REVISION=$(git log -n 1|head -1|awk '{print $2}'|cut -c1-6)
 
 if [ $SKIP_DEPS -eq 0 ];then

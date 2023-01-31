@@ -30,7 +30,10 @@ cd "$OWD"
 exec "${APPDIR}/usr/lib/ld-linux-'$ARCHDASH'.so.2" "${APPDIR}/usr/bin/ezquake-linux-'$ARCH'" $*'
 
 unset CC
-export CFLAGS="-ffast-math -march=nehalem -O3 -pipe -flto=$(nproc)"
+if [ "$ARCH" == "x86_64" ];then
+	march="-march=nehalem"
+fi
+export CFLAGS="$march -O3 -pipe -flto=$(nproc)"
 export LDFLAGS="$CFLAGS"
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
@@ -46,7 +49,7 @@ mkdir -p "$DIR/AppDir/usr/lib" || exit 1
 fresh=0
 cd build && \
 if [ ! -d ezquake-source ];then
-	git clone https://github.com/ezQuake/ezquake-source.git
+	git clone --recurse-submodules https://github.com/ezQuake/ezquake-source.git
   fresh=1
 fi
 cd ezquake-source || exit 2

@@ -91,4 +91,4 @@ strip -s "$DIR/AppDir/usr/bin/"* || exit 5
 cp -Lf /lib64/ld-linux-${ARCHDASH}.so.2 "$DIR/AppDir/usr/lib/." || exit 6
 
 cd "$DIR" || exit 5
-./appimagetool AppDir ezquake-$VERSION-$REVISION.AppImage
+./appimagetool AppDir ezquake-$VERSION-$REVISION-$ARCH.AppImage

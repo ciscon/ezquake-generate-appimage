@@ -27,7 +27,7 @@ Categories=Game;'
 QUAKE_SCRIPT='#!/usr/bin/env bash
 export LD_LIBRARY_PATH="${APPIMAGE_LIBRARY_PATH}:${APPDIR}/usr/lib:${LD_LIBRARY_PATH}"
 cd "$OWD"
-exec "${APPDIR}/usr/lib/ld-linux-'$ARCHDASH'.so.2" "${APPDIR}/usr/bin/ezquake-linux-'$ARCH'" $*'
+exec "${APPDIR}/usr/bin/ezquake-linux-'$ARCH'" $*'
 
 unset CC
 if [ "$ARCH" == "x86_64" ];then
@@ -85,10 +85,13 @@ echo "$DESKTOP_ENTRY" > "$DIR/AppDir/ezquake.desktop" || exit 4
 cp "$DIR/quake.png" "$DIR/AppDir/."||true #copy over quake png if it exists
 mkdir -p "$DIR/AppDir/usr/share/metainfo"
 sed 's,EZQUAKE_VERSION,'$VERSION-$REVISION',g;s,EZQUAKE_DATE,'$(date +%F)',g' "$DIR/ezquake.appdata.xml.template" > "$DIR/AppDir/usr/share/metainfo/ezquake.appdata.xml"
-ldd "$DIR/AppDir/usr/bin/ezquake-linux-$ARCH" |grep --color=never -v libGL|awk '{print $3}'|xargs -I% cp -Lf "%" "$DIR/AppDir/usr/lib/." || exit 5
+ldd "$DIR/AppDir/usr/bin/ezquake-linux-$ARCH" | \
+	grep --color=never -v libGL| \
+	grep --color=never -v libc.so| \
+	awk '{print $3}'| \
+	xargs -I% cp -Lf "%" "$DIR/AppDir/usr/lib/." || exit 5
 strip -s "$DIR/AppDir/usr/lib/"* || exit 5
 strip -s "$DIR/AppDir/usr/bin/"* || exit 5
-cp -Lf /lib64/ld-linux-${ARCHDASH}.so.2 "$DIR/AppDir/usr/lib/." || exit 6
 
 cd "$DIR" || exit 5
 ./appimagetool AppDir ezquake-$VERSION-$REVISION-$ARCH.AppImage

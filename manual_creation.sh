@@ -33,7 +33,7 @@ unset CC
 if [ "$ARCH" == "x86_64" ];then
 	march="-march=nehalem"
 fi
-export CFLAGS="$march -O3 -pipe -flto=$(nproc) -flto-parttion=none -ftree-slp-vectorize"
+export CFLAGS="$march -pipe -O3 -flto=$(nproc) -flto-partition=balanced -ftree-slp-vectorize -ffp-contract=fast -fno-defer-pop -finline-limit=64 -fmerge-all-constants"
 export LDFLAGS="$CFLAGS"
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"

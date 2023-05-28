@@ -31,14 +31,17 @@ int main(){
 '
 
 QUAKE_SCRIPT='#!/usr/bin/env bash
-export LD_LIBRARY_PATH="${APPIMAGE_LIBRARY_PATH}:${APPDIR}/usr/lib:${LD_LIBRARY_PATH}"
+export LD_LIBRARY_PATH="${APPIMAGE_LIBRARY_PATH}:${APPDIR}/usr/lib"
 cd "$OWD"
 "${APPDIR}/usr/bin/test"  >/dev/null 2>&1 |:
 FAIL=${PIPESTATUS[0]}
 if [ $FAIL -eq 0 ];then
-	exec "${APPDIR}/usr/bin/ezquake-linux-'$ARCH'" $*
+  echo "executing with native libc"
+  exec "${APPDIR}/usr/bin/ezquake-linux-'$ARCH'" $*
 else
-	exec "${APPDIR}/usr/lib/ld-linux-'$ARCHDASH'.so.2" "${APPDIR}/usr/bin/ezquake-linux-'$ARCH'" $*
+  echo "executing with appimage libc"
+  export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${APPDIR}/usr/lib-override"
+  exec "${APPDIR}/usr/lib-override/ld-linux-'$ARCHDASH'.so.2" "${APPDIR}/usr/bin/ezquake-linux-'$ARCH'" $*
 fi'
 
 unset CC
@@ -56,6 +59,7 @@ fi
 mkdir -p "$DIR/build" || exit 1
 mkdir -p "$DIR/AppDir/usr/bin" || exit 1
 mkdir -p "$DIR/AppDir/usr/lib" || exit 1
+mkdir -p "$DIR/AppDir/usr/lib-override" || exit 1
 
 echo "$TESTPROGRAM" > "$DIR/build/test.c"
 
@@ -107,8 +111,8 @@ ldd "$DIR/AppDir/usr/bin/ezquake-linux-$ARCH" | \
 	xargs -I% cp -Lf "%" "$DIR/AppDir/usr/lib/." || exit 5
 strip -s "$DIR/AppDir/usr/lib/"* || exit 5
 strip -s "$DIR/AppDir/usr/bin/"* || exit 5
-cp -Lf /lib64/ld-linux-${ARCHDASH}.so.2 "$DIR/AppDir/usr/lib/." || exit 6
-
+mv -f "$DIR/AppDir/usr/lib/libc.so.6" "$DIR/AppDir/usr/lib-override/."
+cp -Lf "/lib64/ld-linux-${ARCHDASH}.so.2" "$DIR/AppDir/usr/lib-override/." || exit 6
 
 cd "$DIR" || exit 5
 ./appimagetool AppDir ezquake-$VERSION-$REVISION-$ARCH.AppImage

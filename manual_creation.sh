@@ -24,10 +24,22 @@ Icon=quake
 Type=Application
 Categories=Game;'
 
+TESTPROGRAM='
+int main(){
+	return 0;
+}
+'
+
 QUAKE_SCRIPT='#!/usr/bin/env bash
 export LD_LIBRARY_PATH="${APPIMAGE_LIBRARY_PATH}:${APPDIR}/usr/lib:${LD_LIBRARY_PATH}"
 cd "$OWD"
-exec "${APPDIR}/usr/bin/ezquake-linux-'$ARCH'" $*'
+"${APPDIR}/usr/bin/test"  >/dev/null 2>&1 |:
+FAIL=${PIPESTATUS[0]}
+if [ $FAIL -eq 0 ];then
+	exec "${APPDIR}/usr/bin/ezquake-linux-'$ARCH'" $*
+else
+	exec "${APPDIR}/usr/lib/ld-linux-'$ARCHDASH'.so.2" "${APPDIR}/usr/bin/ezquake-linux-'$ARCH'" $*
+fi'
 
 unset CC
 if [ "$ARCH" == "x86_64" ];then
@@ -45,9 +57,12 @@ mkdir -p "$DIR/build" || exit 1
 mkdir -p "$DIR/AppDir/usr/bin" || exit 1
 mkdir -p "$DIR/AppDir/usr/lib" || exit 1
 
+echo "$TESTPROGRAM" > "$DIR/build/test.c"
+
 #ezquake git
 fresh=0
 cd build && \
+gcc test.c -o test && \
 if [ ! -d ezquake-source ];then
 	git clone --recurse-submodules https://github.com/ezQuake/ezquake-source.git
   fresh=1
@@ -77,6 +92,7 @@ else
   make -j$(nproc)
 fi
 
+cp -f ../test "$DIR/AppDir/usr/bin/." || exit 4
 cp -f ezquake-linux-$ARCH "$DIR/AppDir/usr/bin/." || exit 4
 rm -f "$DIR/AppDir/AppRun"
 echo "$QUAKE_SCRIPT" > "$DIR/AppDir/AppRun" || exit 4
@@ -87,11 +103,12 @@ mkdir -p "$DIR/AppDir/usr/share/metainfo"
 sed 's,EZQUAKE_VERSION,'$VERSION-$REVISION',g;s,EZQUAKE_DATE,'$(date +%F)',g' "$DIR/ezquake.appdata.xml.template" > "$DIR/AppDir/usr/share/metainfo/ezquake.appdata.xml"
 ldd "$DIR/AppDir/usr/bin/ezquake-linux-$ARCH" | \
 	grep --color=never -v libGL| \
-	grep --color=never -v libc.so| \
 	awk '{print $3}'| \
 	xargs -I% cp -Lf "%" "$DIR/AppDir/usr/lib/." || exit 5
 strip -s "$DIR/AppDir/usr/lib/"* || exit 5
 strip -s "$DIR/AppDir/usr/bin/"* || exit 5
+cp -Lf /lib64/ld-linux-${ARCHDASH}.so.2 "$DIR/AppDir/usr/lib/." || exit 6
+
 
 cd "$DIR" || exit 5
 ./appimagetool AppDir ezquake-$VERSION-$REVISION-$ARCH.AppImage

@@ -91,7 +91,7 @@ REVISION=$(git log -n 1|head -1|awk '{print $2}'|cut -c1-6)
 
 if [ $SKIP_DEPS -eq 0 ];then
   chmod +x ./build-linux.sh && \
-  nice ./build-linux.sh || exit 3
+  nice ./build-linux.sh || make -j$(nproc) || exit 3
 else
   make -j$(nproc)
 fi

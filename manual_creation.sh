@@ -31,7 +31,7 @@ int main(){
 '
 
 QUAKE_SCRIPT='#!/usr/bin/env bash
-export LD_LIBRARY_PATH="${APPIMAGE_LIBRARY_PATH}:${APPDIR}/usr/lib"
+export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${APPIMAGE_LIBRARY_PATH}:${APPDIR}/usr/lib"
 cd "$OWD"
 "${APPDIR}/usr/bin/test"  >/dev/null 2>&1 |:
 FAIL=${PIPESTATUS[0]}

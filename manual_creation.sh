@@ -68,7 +68,7 @@ fresh=0
 cd build && \
 gcc test.c -o test && \
 if [ ! -d ezquake-source ];then
-	git clone --recurse-submodules https://github.com/ezQuake/ezquake-source.git
+	git clone --recurse-submodules https://github.com/QW-Group/ezquake-source.git
   fresh=1
 fi
 cd ezquake-source || exit 2

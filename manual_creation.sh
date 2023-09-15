@@ -25,7 +25,9 @@ Type=Application
 Categories=Game;'
 
 TESTPROGRAM='
+#include "curl/curl.h"
 int main(){
+  curl_easy_init();
 	return 0;
 }
 '
@@ -66,7 +68,7 @@ echo "$TESTPROGRAM" > "$DIR/build/test.c"
 #ezquake git
 fresh=0
 cd build && \
-gcc test.c -o test && \
+gcc test.c -o test -lcurl && \
 if [ ! -d ezquake-source ];then
 	git clone --recurse-submodules https://github.com/QW-Group/ezquake-source.git
   fresh=1

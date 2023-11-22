@@ -34,7 +34,12 @@ int main(){
 
 QUAKE_SCRIPT='#!/usr/bin/env bash
 export LD_LIBRARY_PATH="${APPIMAGE_LIBRARY_PATH}:${APPDIR}/usr/lib:${LD_LIBRARY_PATH}"
-cd "$OWD"
+if [ ! -e "$OWD/id1" ];then
+	cd "$(dirname "$APPIMAGE")"
+else
+	cd "$OWD"
+fi
+
 "${APPDIR}/usr/bin/test"  >/dev/null 2>&1 |:
 FAIL=${PIPESTATUS[0]}
 if [ $FAIL -eq 0 ];then
